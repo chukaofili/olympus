@@ -1,0 +1,13 @@
+{
+  "name": "yaka",
+  "version": "0.0.0",
+  "description": "CLI for auto deploying kubernetes apps",
+  "main": "main.js",
+  "repository": "git@github.com:chukaofili/yaka.git",
+  "author": "Chuka Ofili <ofili@microsmart.tk>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "commander": "^2.11.0"
+  }
+}
