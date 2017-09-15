@@ -1,2 +1,2 @@
 # yaka
-CLI for auto deploying apps
+CLI for auto deploying kubernetes apps
