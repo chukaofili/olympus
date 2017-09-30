@@ -1,13 +1,22 @@
 {
-  "name": "yaka",
-  "version": "0.0.0",
+  "name": "yaks",
+  "version": "0.0.1",
   "description": "CLI for auto deploying kubernetes apps",
-  "main": "main.js",
   "repository": "git@github.com:chukaofili/yaka.git",
   "author": "Chuka Ofili <ofili@microsmart.tk>",
   "license": "MIT",
   "private": false,
+  "bin": {
+    "yaka": "bin/yaka.js"
+  },
+  "engines": {
+    "node": ">=8.6.0"
+  },
   "dependencies": {
-    "commander": "^2.11.0"
+    "commander": "^2.11.0",
+    "semver": "^5.4.1"
+  },
+  "scripts": {
+    "yaka": "./bin/yaka.js"
   }
 }
