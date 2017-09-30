@@ -1,13 +1,13 @@
 {
-  "name": "yaks",
+  "name": "olympus",
   "version": "0.0.1",
   "description": "CLI for auto deploying kubernetes apps",
-  "repository": "git@github.com:chukaofili/yaka.git",
+  "repository": "git@github.com:chukaofili/olympus.git",
   "author": "Chuka Ofili <ofili@microsmart.tk>",
   "license": "MIT",
   "private": false,
   "bin": {
-    "yaka": "bin/yaka.js"
+    "olympus": "bin/olympus.js"
   },
   "engines": {
     "node": ">=8.6.0"
@@ -17,6 +17,6 @@
     "semver": "^5.4.1"
   },
   "scripts": {
-    "yaka": "./bin/yaka.js"
+    "olympus": "./bin/olympus.js"
   }
 }
