@@ -1,5 +1,5 @@
 const osenv = require('osenv');
-const Package = require('../package.json');
+const _ = require('lodash');
 
 const FileService = require('./FileService');
 const YamlService = require('./YamlService');
@@ -18,7 +18,7 @@ class ConfigService {
   constructor() {
     // this.defaults = PromptService.getDefaultValues(this.defaultOptions);
     this.path = `${osenv.home()}/${this.configFilename}`;
-    // this.config = this.read();
+    this.config = this.read();
   }
 
   /**
@@ -59,22 +59,30 @@ class ConfigService {
   /**
    * Provides the default values.
    */
-  get defaultValues() {
-    return this.defaults;
-  }
+  // get defaultValues() {
+  //   return this.defaults;
+  // }
 
   /**
    * Provides a safe default when reading the global config file.
    */
-  get savedValues() {
-    return this.config;
-  }
+  // get savedValues() {
+  //   return this.config;
+  // }
 
   /**
    * Returns a merged set of the defaultValues and the savedValues.
    */
-  get values() {
-    return {...this.defaultValues, ...this.savedValues};
+  // get values() {
+  //   return {...this.defaultValues, ...this.savedValues};
+  // }
+
+  /**
+   * These are the options we'll write to the file. We filter out options
+   * that no longer exist.
+   */
+  filterValues(values) {
+    return _.pickBy(values, (value, key) => key in this.defaultOptions);
   }
 
   /**
@@ -105,7 +113,7 @@ class ConfigService {
   read() {
     try {
       const config = YamlService.read(this.location);
-      ValidationService.validate(config, ConfigSchema);
+      // ValidationService.validate(config, ConfigSchema);
       return config;
     } catch (error) {
       return {};
@@ -119,28 +127,23 @@ class ConfigService {
     FileService.overwrite(this.location, this.toYaml(values));
   }
 
-  async promptAndUpdateOptions({onlyNew}) {
-    // If we only want to update missing options and there aren't any missing
-    // options to set, we should exit early.
-    if (onlyNew && !this.isMissingValues) {
-      return;
-    }
-
-    const values = await PromptService.askForVariables({
-      // Only prompt the user for missing options, keep the rest.
-      options: onlyNew ? this.missingOptions : this.defaultOptions,
-    });
+  async promptAndUpdateOptions() {
+    console.log(`Get's here`);
+    // const values = await PromptService.askForVariables({
+    //   // Only prompt the user for missing options, keep the rest.
+    //   options: onlyNew ? this.missingOptions : this.defaultOptions,
+    // });
 
     // Merge the results of the current config with the new answers.
     // Write the global config back.
-    this.write({...this.values, ...values});
+    // this.write({...this.values, ...values});
   }
 
   /**
    * The name of the config file that we look for.
    */
   get configFilename() {
-    return '.olympusConfig';
+    return '.olympus_config';
   }
 
   /**

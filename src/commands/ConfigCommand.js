@@ -1,4 +1,5 @@
 const Command = require('./Command');
+const {ConfigService} = require('../services');
 
 /**
  * ConfigCommand represents the 'gig config' command.
@@ -31,7 +32,7 @@ class ConfigCommand extends Command {
     //   ConfigService.createFile();
     // }
 
-    // await ConfigService.promptAndUpdateOptions({onlyNew: this.onlyNew});
+    await ConfigService.promptAndUpdateOptions();
 
     console.log('Successfully updated the CLI configuration.');
   }
