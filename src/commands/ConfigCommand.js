@@ -28,11 +28,11 @@ class ConfigCommand extends Command {
    * @method
    */
   async execute() {
-    // if (!ConfigService.fileExists) {
-    //   ConfigService.createFile();
-    // }
+    if (!ConfigService.fileExists) {
+      ConfigService.createFile();
+    }
 
-    await ConfigService.promptAndUpdateOptions();
+    await ConfigService.inquireAndUpdateOptions();
 
     console.log('Successfully updated the CLI configuration.');
   }

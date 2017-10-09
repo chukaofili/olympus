@@ -18,6 +18,7 @@
     "directory-tree": "^2.0.0",
     "file-type": "^6.2.0",
     "fs-extra": "^4.0.2",
+    "inquirer": "^3.3.0",
     "is-binary-path": "^2.0.0",
     "lodash": "^4.17.4",
     "node-yaml": "^3.1.1",

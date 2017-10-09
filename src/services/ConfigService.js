@@ -3,6 +3,7 @@ const _ = require('lodash');
 
 const FileService = require('./FileService');
 const YamlService = require('./YamlService');
+const InquireService = require('./InquireService');
 
 /**
  * ConfigService represents a singleton ConfigService. We are using a Singleton
@@ -16,9 +17,7 @@ class ConfigService {
    * @constructor
    */
   constructor() {
-    // this.defaults = PromptService.getDefaultValues(this.defaultOptions);
     this.path = `${osenv.home()}/${this.configFilename}`;
-    this.config = this.read();
   }
 
   /**
@@ -38,58 +37,39 @@ class ConfigService {
   /**
    * Default options for the CLI stored in the global config.
    */
-  get defaultOptions() {
-    return {
-      autoupdate: true,
-      packageManager: {
-        type: 'list',
-        question: 'Which package manager do you use?',
-        default: 'yarn',
-        choices: ['yarn', 'npm'],
-      },
-      gitProtocol: {
-        type: 'list',
-        question: 'Which git protocol do you prefer?',
-        default: 'ssh',
-        choices: ['ssh', 'https'],
+  get defaultQuestions() {
+    return [{
+      type: 'confirm',
+      name: 'autoupdate',
+      message: 'Turn on autoupdate?',
+      default: false
+    },
+    {
+      type: 'list',
+      name: 'packageManager',
+      message: 'Which package manager do you use?',
+      default: 'yarn',
+      choices: ['yarn', 'npm'],
+      filter: function (val) {
+        return val.toLowerCase();
       }
-    };
-  }
-
-  /**
-   * Provides the default values.
-   */
-  // get defaultValues() {
-  //   return this.defaults;
-  // }
-
-  /**
-   * Provides a safe default when reading the global config file.
-   */
-  // get savedValues() {
-  //   return this.config;
-  // }
-
-  /**
-   * Returns a merged set of the defaultValues and the savedValues.
-   */
-  // get values() {
-  //   return {...this.defaultValues, ...this.savedValues};
-  // }
-
-  /**
-   * These are the options we'll write to the file. We filter out options
-   * that no longer exist.
-   */
-  filterValues(values) {
-    return _.pickBy(values, (value, key) => key in this.defaultOptions);
+    }, {
+      type: 'list',
+      name: 'gitProtocol',
+      message: 'Which git protocol do you prefer?',
+      default: 'ssh',
+      choices: ['ssh', 'https'],
+      filter: function (val) {
+        return val.toLowerCase();
+      }
+    }]
   }
 
   /**
    * Creates a YAML representation of the config values.
    */
   toYaml(values) {
-    return YamlService.toYaml(this.filterValues(values));
+    return YamlService.toYaml(values);
   }
 
   /**
@@ -113,7 +93,6 @@ class ConfigService {
   read() {
     try {
       const config = YamlService.read(this.location);
-      // ValidationService.validate(config, ConfigSchema);
       return config;
     } catch (error) {
       return {};
@@ -127,23 +106,16 @@ class ConfigService {
     FileService.overwrite(this.location, this.toYaml(values));
   }
 
-  async promptAndUpdateOptions() {
-    console.log(`Get's here`);
-    // const values = await PromptService.askForVariables({
-    //   // Only prompt the user for missing options, keep the rest.
-    //   options: onlyNew ? this.missingOptions : this.defaultOptions,
-    // });
-
-    // Merge the results of the current config with the new answers.
-    // Write the global config back.
-    // this.write({...this.values, ...values});
+  async inquireAndUpdateOptions() {
+    const values = await InquireService.askQuestions({questions: this.defaultQuestions});
+    this.write(values);
   }
 
   /**
    * The name of the config file that we look for.
    */
   get configFilename() {
-    return '.olympus_config';
+    return '.olympus_global';
   }
 
   /**
