@@ -1,4 +1,5 @@
 const inquirer = require('inquirer');
+const _ = require('lodash');
 
 /**
  * InquireService represents a utility service to ask questions via the terminal
@@ -14,7 +15,7 @@ class InquireService {
       if (useDefaults) {
         return this.getDefaultAnswers(questions);
       }
-      
+
       const answers = await inquirer.prompt(questions);
       return answers;
     } catch (error) {
@@ -31,10 +32,6 @@ class InquireService {
 
     return _.reduce(questions, accumulate, {});
   }
-
-  // static getDefaultValues(options) {
-  //   return this.getDefaultAnswers(this.createQuestions(options));
-  // }
 
 }
 

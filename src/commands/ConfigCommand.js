@@ -1,5 +1,6 @@
 const Command = require('./Command');
 const {ConfigService} = require('../services');
+const Package = require('../../package.json');
 
 /**
  * ConfigCommand represents the 'gig config' command.
@@ -34,7 +35,7 @@ class ConfigCommand extends Command {
 
     await ConfigService.inquireAndUpdateOptions();
 
-    console.log('Successfully updated the CLI configuration.');
+    console.log(`Successfully updated the ${Package.name} configuration.`);
   }
 
 }

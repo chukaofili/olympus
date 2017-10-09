@@ -107,7 +107,7 @@ class ConfigService {
   }
 
   async inquireAndUpdateOptions() {
-    const values = await InquireService.askQuestions({questions: this.defaultQuestions});
+    const values = await InquireService.askQuestions({questions: this.defaultQuestions, useDefaults: true});
     this.write(values);
   }
 
