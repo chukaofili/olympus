@@ -9,7 +9,7 @@ const Utils = require('../src/utils');
 Utils.checkNodeVersion(Package);
 
 const program = new commander.Command(Config.COMMAND)
-  .version(Package.version, '-v, --version')
+  .version(`v${Package.version}`, '-v, --version')
   .arguments('<command>')
   .usage('<command> [options]')
   .command('config', 'configure the CLI');
