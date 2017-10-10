@@ -3,7 +3,7 @@ const {ConfigService} = require('../services');
 const Package = require('../../package.json');
 
 /**
- * ConfigCommand represents the 'gig config' command.
+ * ConfigCommand represents the 'olympus config' command.
  *
  * We are using the Gang of four Command pattern.
  * The commands are constructed and then generated.

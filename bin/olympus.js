@@ -12,7 +12,8 @@ const program = new commander.Command(Config.COMMAND)
   .version(`v${Package.version}`, '-v, --version')
   .arguments('<command>')
   .usage('<command> [options]')
-  .command('config', 'configure the CLI');
+  .command('config', 'configure the CLI')
+  .command('init', 'initialize new project');
 
 const run = (args) => {
   const names = program.commands.map(command => command._name).concat('help');
