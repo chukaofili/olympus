@@ -1,5 +1,5 @@
 const inquirer = require('inquirer');
-const _ = require('lodash');
+const _reduce = require('lodash/reduce');
 
 /**
  * InquireService represents a utility service to ask questions via the terminal
@@ -30,7 +30,7 @@ class InquireService {
       [name]: defaultValue,
     });
 
-    return _.reduce(questions, accumulate, {});
+    return _reduce(questions, accumulate, {});
   }
 
 }

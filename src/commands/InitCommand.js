@@ -1,10 +1,8 @@
 const Command = require('./Command');
+const {ConfigService, FileService, TemplateService} = require('../services');
 
 /**
  * InitCommand represents the 'olympus init' command.
- *
- * We are using the Gang of four Command pattern.
- * The commands are constructed and then generated.
  *
  * @class
  * @extends Command
@@ -19,16 +17,31 @@ class InitCommand extends Command {
   constructor(input = {}) {
     const options = {...input}
     super(options);
-    this.path = options.path;
+    this.projectPath = options.path;
     this.template = options.template;
   }
 
   /**
-   * Executes the InitCommand. If the global config already exists AND it has
-   * all options set, then this method does not log or do anything.
+   * Create the project cahce.
+   */
+  createProjectCache(directory) {
+    return FileService.createDirectory(directory);
+  }
+
+  /**
+   * Executes the InitCommand.
    * @method
    */
   async execute() {
+    if (!FileService.exists(this.projectPath)) {
+      console.log(`Error: path ${this.projectPath} does not exist.`)
+      return;
+    }
+
+    ConfigService.createProjectCache(this.projectPath);
+
+    await TemplateService.setupTemplate(this.projectPath, this.template);
+
     console.log(`Successfully initialized new project.`);
   }
 
