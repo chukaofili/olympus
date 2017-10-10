@@ -20,13 +20,7 @@ class InitCommand extends Command {
     this.projectPath = options.path;
     this.template = options.template;
   }
-
-  /**
-   * Create the project cahce.
-   */
-  createProjectCache(directory) {
-    return FileService.createDirectory(directory);
-  }
+  
 
   /**
    * Executes the InitCommand.

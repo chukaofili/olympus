@@ -137,7 +137,7 @@ class ConfigService {
    * Directory for config files used by the CLI when generating.
    */
   get projectCacheDirectory() {
-    return '.olympus';
+    return 'olympus';
   }
 
   /**
