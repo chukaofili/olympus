@@ -16,6 +16,7 @@
     "commander": "^2.11.0",
     "dir-compare": "^1.4.0",
     "directory-tree": "^2.0.0",
+    "ejs": "^2.5.7",
     "file-type": "^6.2.0",
     "fs-extra": "^4.0.2",
     "inquirer": "^3.3.0",

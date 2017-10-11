@@ -91,7 +91,8 @@ class ConfigService {
    */
   createProjectCache(projectPath) {
     const projectCache = path.join(projectPath, this.projectCacheDirectory);
-    return FileService.createDirectory(projectCache);
+    FileService.createDirectory(projectCache);
+    return projectCache;
   }
 
   /**

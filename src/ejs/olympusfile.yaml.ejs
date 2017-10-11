@@ -1,15 +1,13 @@
+kind: Olympusfile
 platform: k8s
 spec:
-  name: testeegigname
+  name: simpleapp
   environments:
-    - name: prod
     - name: staging
   services:
     - name: api
-      endpoint: api
-      container_port: "8000"
-      provider: gigsternetwork
-    - name: frontend
-      endpoint: fe
-      container_port: "3000"
-      provider: gigsternetwork
+      scale: 1
+      location: ./api
+      url: simpleapp-api.example.com
+      container_port: 1500
+      ingress: nginx

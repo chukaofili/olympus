@@ -20,7 +20,6 @@ class InitCommand extends Command {
     this.projectPath = options.path;
     this.template = options.template;
   }
-  
 
   /**
    * Executes the InitCommand.
@@ -28,15 +27,14 @@ class InitCommand extends Command {
    */
   async execute() {
     if (!FileService.exists(this.projectPath)) {
-      console.log(`Error: path ${this.projectPath} does not exist.`)
-      return;
+      return console.log(`Error: path ${this.projectPath} does not exist.`);
     }
 
-    ConfigService.createProjectCache(this.projectPath);
+    const projectCache = ConfigService.createProjectCache(this.projectPath);
+    await TemplateService.setupInitFile(projectCache);
 
-    await TemplateService.setupTemplate(this.projectPath, this.template);
-
-    console.log(`Successfully initialized new project.`);
+    // await TemplateService.setupProjectTemplate(this.projectPath, this.template);
+    console.log(`Initialization complete.`);
   }
 
 }
