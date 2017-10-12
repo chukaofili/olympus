@@ -1,5 +1,5 @@
 const osenv = require('osenv');
-const _ = require('lodash');
+const path = require('path');
 
 const FileService = require('./FileService');
 const YamlService = require('./YamlService');
@@ -17,7 +17,9 @@ class ConfigService {
    * @constructor
    */
   constructor() {
-    this.path = `${osenv.home()}/${this.configFilename}`;
+    this.path = path.join(osenv.home(), this.cacheDirectory, this.configFilename);
+    this.tmpPath = path.join(osenv.home(), this.cacheDirectory, this.tmpDirectory);
+    this.cachePath = path.join(osenv.home(), this.cacheDirectory);
   }
 
   /**
@@ -25,6 +27,20 @@ class ConfigService {
    */
   get location() {
     return this.path;
+  }
+
+  /**
+   * The location of the global cache directory.
+   */
+  get cache() {
+    return this.cachePath;
+  }
+
+  /**
+   * The location of the temp working directory.
+   */
+  get tmp() {
+    return this.tmpPath;
   }
 
   /**
@@ -84,6 +100,30 @@ class ConfigService {
    */
   createFile() {
     this.write({});
+    this.createTempDirectory();
+  }
+
+  /**
+   * Ensure cache/tmp directories exist.
+   */
+  createTempDirectory() {
+    FileService.createDirectory(this.tmpPath);
+  }
+
+  /**
+   * Ensure cache directories exist.
+   */
+  purgeTempDirectory() {
+    return FileService.removeDirectoryContents(this.tmpPath);
+  }
+
+  /**
+   * Writes the configuration content to the file.
+   */
+  createProjectCache(projectPath) {
+    const projectCache = path.join(projectPath, this.projectCacheDirectory);
+    FileService.createDirectory(projectCache);
+    return projectCache;
   }
 
   /**
@@ -107,7 +147,7 @@ class ConfigService {
   }
 
   async inquireAndUpdateOptions() {
-    const values = await InquireService.askQuestions({questions: this.defaultQuestions, useDefaults: true});
+    const values = await InquireService.askQuestions({ questions: this.defaultQuestions, useDefaults: false });
     this.write(values);
   }
 
@@ -123,6 +163,13 @@ class ConfigService {
    */
   get cacheDirectory() {
     return '.olympus';
+  }
+
+  /**
+   * Directory for config files used by the CLI when generating.
+   */
+  get projectCacheDirectory() {
+    return 'olympus';
   }
 
   /**

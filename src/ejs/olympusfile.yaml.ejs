@@ -1,0 +1,13 @@
+kind: Olympusfile
+platform: k8s
+spec:
+  name: simpleapp
+  environments:
+    - name: staging
+  services:
+    - name: api
+      scale: 1
+      location: ./api
+      url: simpleapp-api.example.com
+      container_port: 1500
+      ingress: nginx

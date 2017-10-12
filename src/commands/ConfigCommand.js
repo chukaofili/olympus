@@ -3,10 +3,7 @@ const {ConfigService} = require('../services');
 const Package = require('../../package.json');
 
 /**
- * ConfigCommand represents the 'gig config' command.
- *
- * We are using the Gang of four Command pattern.
- * The commands are constructed and then generated.
+ * ConfigCommand represents the 'olympus config' command.
  *
  * @class
  * @extends Command
@@ -24,8 +21,7 @@ class ConfigCommand extends Command {
   }
 
   /**
-   * Executes the ConfigCommand. If the global config already exists AND it has
-   * all options set, then this method does not log or do anything.
+   * Executes the ConfigCommand.
    * @method
    */
   async execute() {

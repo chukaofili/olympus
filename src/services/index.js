@@ -4,5 +4,6 @@ module.exports = {
     get FileService() { return require('./FileService'); },
     get YamlService() { return require('./YamlService'); },
     get InquireService() { return require('./InquireService'); },
+    get TemplateService() { return require('./TemplateService'); },
   };
   
