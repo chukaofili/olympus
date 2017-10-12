@@ -1,6 +1,10 @@
 const Command = require('./Command');
 const {ConfigService, FileService, TemplateService} = require('../services');
 
+const Spinner = require('cli-spinner').Spinner;
+const spinner = new Spinner('%s');
+spinner.setSpinnerString('|/-\\');
+
 /**
  * InitCommand represents the 'olympus init' command.
  *
@@ -30,10 +34,12 @@ class InitCommand extends Command {
       return console.log(`Error: path ${this.projectPath} does not exist.`);
     }
 
+    spinner.start();
     const projectCache = ConfigService.createProjectCache(this.projectPath);
     await TemplateService.setupInitFile(projectCache);
-
-    // await TemplateService.setupProjectTemplate(this.projectPath, this.template);
+    
+    await TemplateService.setupProjectTemplate(this.projectPath, this.template);
+    spinner.stop(true);
     console.log(`Initialization complete.`);
   }
 

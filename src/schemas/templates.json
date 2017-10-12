@@ -1,0 +1,13 @@
+[{
+    "name": "sample-api",
+    "repoName": "olympus-templates",
+    "repo": "https://github.com/chukaofili/olympus-templates.git",
+    "folder": "sample-api",
+    "type": "nodejs"
+}, {
+    "name": "sample-frontend",
+    "repoName": "olympus-templates",
+    "repo": "https://github.com/chukaofili/olympus-templates.git",
+    "folder": "sample-frontend",
+    "type": "nodejs"
+}]

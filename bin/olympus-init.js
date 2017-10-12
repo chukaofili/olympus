@@ -25,8 +25,8 @@ const program = new commander.Command(command)
       '  Examples:',
       '',
       `    $ ${command}`,
-      `    $ ${command} -t api`,
-      `    $ ${command} -t api -p /www/example/project`,
+      `    $ ${command} -t sample-api`,
+      `    $ ${command} -t sample-frontend -p /www/example/project`,
       '',
     ].forEach(message => console.log(message));
   })
