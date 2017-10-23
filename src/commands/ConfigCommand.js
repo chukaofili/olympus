@@ -1,5 +1,5 @@
 const Command = require('./Command');
-const {ConfigService} = require('../services');
+const {ConfigService, LogService} = require('../services');
 const Package = require('../../package.json');
 
 /**
@@ -31,7 +31,7 @@ class ConfigCommand extends Command {
 
     await ConfigService.inquireAndUpdateOptions();
 
-    console.log(`Successfully updated the ${Package.name} configuration.`);
+    LogService.success(`Successfully updated the ${Package.name} configuration.`);
   }
 
 }
