@@ -1,0 +1,28 @@
+---
+
+extends:
+  - airbnb-base
+env:
+  es6: true
+  node: true
+parserOptions:
+  ecmaVersion: 8
+  sourceType: module
+rules:
+  arrow-body-style: error
+  class-methods-use-this: off
+  no-console: error
+  no-underscore-dangle: error
+  padded-blocks:
+    - error
+    - blocks: never
+      classes: always
+      switches: never
+  quotes:
+    - error
+    - single
+    - allowTemplateLiterals: true
+  object-curly-spacing: off
+  import/no-extraneous-dependencies:
+    - error
+    - devDependencies: true

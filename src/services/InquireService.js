@@ -19,7 +19,7 @@ class InquireService {
       const answers = await inquirer.prompt(questions);
       return answers;
     } catch (error) {
-      console.log(error)
+      console.log(error);
       return {};
     }
   }

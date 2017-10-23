@@ -12,6 +12,7 @@ const readChunk = require('read-chunk');
  * @class
  */
 class FileService {
+
   /**
    * Returns true if the filename (path) exists.
    * @param {String} filename - the filename to check.
@@ -191,13 +192,17 @@ class FileService {
     this.createDirectory(destination);
 
     // This is the overall diff that we'll be accumulating.
-    const initial = {added: [], removed: [], changed: [], unchanged: []};
+    const initial = {
+      added: [], removed: [], changed: [], unchanged: [],
+    };
     const result = dircompare.compareSync(source, destination, {
       compareSize: true,
     });
 
     const accumulate = (all, diff) => {
-      const {relativePath, name1, name2, state, type1, type2} = diff;
+      const {
+        relativePath, name1, name2, state, type1, type2,
+      } = diff;
 
       // Remove the beginning `/` so we have truly relative paths.
       // Using filter to take out undefined paths will support the root

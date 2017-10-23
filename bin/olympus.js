@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+
 
 const commander = require('commander');
 const Package = require('../package.json');
@@ -25,7 +25,7 @@ const run = (args) => {
       `the list of commands below:`
     );
 
-    console.log(message)
+    console.log(message);
     program.outputHelp();
     process.exit(1);
   } else {

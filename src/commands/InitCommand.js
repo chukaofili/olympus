@@ -2,6 +2,7 @@ const Command = require('./Command');
 const {ConfigService, FileService, TemplateService} = require('../services');
 
 const Spinner = require('cli-spinner').Spinner;
+
 const spinner = new Spinner('%s');
 spinner.setSpinnerString('|/-\\');
 
@@ -19,7 +20,7 @@ class InitCommand extends Command {
    * @constructor
    */
   constructor(input = {}) {
-    const options = {...input}
+    const options = {...input};
     super(options);
     this.projectPath = options.path;
     this.template = options.template;
@@ -37,7 +38,7 @@ class InitCommand extends Command {
     spinner.start();
     const projectCache = ConfigService.createProjectCache(this.projectPath);
     await TemplateService.setupInitFile(projectCache);
-    
+
     await TemplateService.setupProjectTemplate(this.projectPath, this.template);
     spinner.stop(true);
     console.log(`Initialization complete.`);

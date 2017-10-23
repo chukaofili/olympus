@@ -58,7 +58,7 @@ class ConfigService {
       type: 'confirm',
       name: 'autoupdate',
       message: 'Turn on autoupdate?',
-      default: false
+      default: false,
     },
     {
       type: 'list',
@@ -66,19 +66,19 @@ class ConfigService {
       message: 'Which package manager do you use?',
       default: 'yarn',
       choices: ['yarn', 'npm'],
-      filter: function (val) {
+      filter(val) {
         return val.toLowerCase();
-      }
+      },
     }, {
       type: 'list',
       name: 'gitProtocol',
       message: 'Which git protocol do you prefer?',
       default: 'ssh',
       choices: ['ssh', 'https'],
-      filter: function (val) {
+      filter(val) {
         return val.toLowerCase();
-      }
-    }]
+      },
+    }];
   }
 
   /**
