@@ -45,8 +45,6 @@ class ConfigCommand extends Command {
         LogService.error(`Block does not exist.`);
         break;
     }
-
-
   }
 
 }
