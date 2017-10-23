@@ -26,7 +26,11 @@ class Command {
    */
   wrap(execute) {
     return async (...args) => {
-      const {autoconfig, autoupdate, verbose} = this.options;
+      const {verbose} = this.options;
+
+      if (verbose) {
+        LogService.enableVerbose();
+      }
 
       await execute.apply(this, args);
     };

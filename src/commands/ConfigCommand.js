@@ -15,9 +15,10 @@ class ConfigCommand extends Command {
    *
    * @constructor
    */
-  constructor(input = {}) {
-    const options = {...input, autoconfig: false};
+  constructor(block, input = {}) {
+    const options = {block, ...input, autoconfig: false};
     super(options);
+    this.block = block;
   }
 
   /**
@@ -25,13 +26,27 @@ class ConfigCommand extends Command {
    * @method
    */
   async execute() {
-    if (!ConfigService.fileExists) {
-      ConfigService.createFile();
+    const {block} = this;
+
+    switch (block) {
+      case 'cli':
+        if (!ConfigService.fileExists) {
+          ConfigService.createFile();
+        }
+
+        await ConfigService.inquireAndUpdateOptions();
+
+        LogService.success(`Successfully updated the ${Package.name} configuration.`);
+        break;
+      case 'cloud':
+        LogService.success(`Successfully updated the ${Package.name} configuration.`);
+        break;
+      default:
+        LogService.error(`Block does not exist.`);
+        break;
     }
 
-    await ConfigService.inquireAndUpdateOptions();
 
-    LogService.success(`Successfully updated the ${Package.name} configuration.`);
   }
 
 }
