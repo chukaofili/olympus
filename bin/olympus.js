@@ -5,6 +5,7 @@ const commander = require('commander');
 const Package = require('../package.json');
 const Config = require('../src/config');
 const Utils = require('../src/utils');
+const { LogService } = require('../src/services');
 
 Utils.checkNodeVersion(Package);
 
@@ -16,6 +17,7 @@ const program = new commander.Command(Config.COMMAND)
   .command('init', 'initialize new project');
 
 const run = (args) => {
+  // eslint-disable-next-line no-underscore-dangle
   const names = program.commands.map(command => command._name).concat('help');
   const input = args[2];
 
@@ -25,7 +27,7 @@ const run = (args) => {
       `the list of commands below:`
     );
 
-    console.log(message);
+    LogService.info(message);
     program.outputHelp();
     process.exit(1);
   } else {

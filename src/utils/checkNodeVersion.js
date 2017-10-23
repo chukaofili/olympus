@@ -18,7 +18,7 @@ const checkNodeVersion = (Package) => {
     );
 
     if (!semver.satisfies(version, range)) {
-      console.log(message);
+      console.log(message); //eslint-disable-line
       process.exit(1);
     }
   }

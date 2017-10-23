@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
-const _reduce = require('lodash/reduce');
+const reduce = require('lodash/reduce');
+const {LogService} = require('./');
 
 /**
  * InquireService represents a utility service to ask questions via the terminal
@@ -19,7 +20,7 @@ class InquireService {
       const answers = await inquirer.prompt(questions);
       return answers;
     } catch (error) {
-      console.log(error);
+      LogService.error(error);
       return {};
     }
   }
@@ -30,7 +31,7 @@ class InquireService {
       [name]: defaultValue,
     });
 
-    return _reduce(questions, accumulate, {});
+    return reduce(questions, accumulate, {});
   }
 
 }

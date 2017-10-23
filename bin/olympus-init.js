@@ -5,6 +5,7 @@ const commander = require('commander');
 const Config = require('../src/config');
 const collect = require('../src/collect');
 const { InitCommand } = require('../src/commands');
+const { LogService } = require('../src/services');
 
 const command = `${Config.COMMAND} init`;
 const program = new commander.Command(command)
@@ -28,7 +29,7 @@ const program = new commander.Command(command)
       `    $ ${command} -t sample-api`,
       `    $ ${command} -t sample-frontend -p /www/example/project`,
       '',
-    ].forEach(message => console.log(message));
+    ].forEach(message => LogService.info(message));
   })
   .parse(process.argv);
 

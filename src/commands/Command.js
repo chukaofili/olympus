@@ -1,3 +1,5 @@
+const { LogService } = require('../services');
+
 /**
  * Command represents the base class for any commands.
  *

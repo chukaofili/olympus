@@ -5,6 +5,7 @@ const directoryTree = require('directory-tree');
 const fileType = require('file-type');
 const isBinaryPath = require('is-binary-path');
 const readChunk = require('read-chunk');
+const _ = require('lodash');
 
 /**
  * FileService is a utility service that allows us to interact with the

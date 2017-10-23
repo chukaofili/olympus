@@ -1,7 +1,9 @@
 const Command = require('./Command');
-const {ConfigService, FileService, TemplateService} = require('../services');
+const {
+  ConfigService, FileService, LogService, TemplateService,
+} = require('../services');
 
-const Spinner = require('cli-spinner').Spinner;
+const { Spinner } = require('cli-spinner');
 
 const spinner = new Spinner('%s');
 spinner.setSpinnerString('|/-\\');
@@ -32,7 +34,7 @@ class InitCommand extends Command {
    */
   async execute() {
     if (!FileService.exists(this.projectPath)) {
-      return console.log(`Error: path ${this.projectPath} does not exist.`);
+      return LogService.error(`Error: path ${this.projectPath} does not exist.`);
     }
 
     spinner.start();
@@ -41,7 +43,7 @@ class InitCommand extends Command {
 
     await TemplateService.setupProjectTemplate(this.projectPath, this.template);
     spinner.stop(true);
-    console.log(`Initialization complete.`);
+    LogService.success(`Initialization complete.`);
   }
 
 }
