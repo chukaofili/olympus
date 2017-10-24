@@ -6,4 +6,5 @@ module.exports = {
   get InquireService() { return require('./InquireService'); },
   get TemplateService() { return require('./TemplateService'); },
   get LogService() { return require('./LogService'); },
+  get SpinnerService() { return require('./SpinnerService'); },
 };

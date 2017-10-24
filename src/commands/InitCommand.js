@@ -3,11 +3,6 @@ const {
   ConfigService, FileService, LogService, TemplateService,
 } = require('../services');
 
-const { Spinner } = require('cli-spinner');
-
-const spinner = new Spinner('%s');
-spinner.setSpinnerString('|/-\\');
-
 /**
  * InitCommand represents the 'olympus init' command.
  *
@@ -37,13 +32,12 @@ class InitCommand extends Command {
       return LogService.error(`Error: path ${this.projectPath} does not exist.`);
     }
 
-    spinner.start();
     const projectCache = ConfigService.createProjectCache(this.projectPath);
     await TemplateService.setupInitFile(projectCache);
 
     await TemplateService.setupProjectTemplate(this.projectPath, this.template);
-    spinner.stop(true);
-    LogService.success(`Initialization complete.`);
+
+    return LogService.success(`Initialization complete.`);
   }
 
 }
