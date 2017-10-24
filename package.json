@@ -33,7 +33,8 @@
   },
   "scripts": {
     "olympus": "./bin/olympus.js",
-    "lint": "./node_modules/.bin/eslint ."
+    "lint": "./node_modules/.bin/eslint .",
+    "prepush": "yarn lint"
   },
   "devDependencies": {
     "eslint": "^4.9.0",
