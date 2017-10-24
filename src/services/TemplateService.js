@@ -2,7 +2,9 @@ const ejs = require('ejs');
 const path = require('path');
 const Git = require('nodegit');
 const _ = require('lodash');
-const {ConfigService, FileService, LogService, SpinnerService} = require('./');
+const {
+  ConfigService, FileService, LogService, SpinnerService,
+} = require('./');
 const templateRepos = require('../schemas/templates.json');
 
 
