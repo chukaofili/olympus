@@ -24,14 +24,16 @@ class TemplateService {
   }
 
   async setupInitFile(projectCache) {
+    SpinnerService.start({text: `Initializing olympusfile, please wait...`});
     const scaffoldFile = path.resolve(__dirname, '..', 'ejs', 'olympusfile.yaml.ejs');
     const initFile = path.join(projectCache, 'olympusfile.yaml');
 
     if (FileService.exists(initFile)) {
-      return SpinnerService.startAndStop({text: `Already initialized olympusfile, skipping...`, type: 'info'});
+      return SpinnerService.stop({text: `Already initialized olympusfile, skipping...`, type: 'info'});
     }
 
-    return this.renderFile(scaffoldFile, initFile);
+    this.renderFile(scaffoldFile, initFile);
+    return SpinnerService.stop({text: `Olympusfile initialized.`});
   }
 
   async cloneRepo(sourceRepo, outputDirectory) {
@@ -56,7 +58,7 @@ class TemplateService {
     const repoPath = path.join(ConfigService.tmp, templateRepo.repoName);
     SpinnerService.start({text: `Fetching ${template} template, please wait...`});
     await this.cloneRepo(templateRepo.repo, repoPath);
-    SpinnerService.stop({text: `Fetched ${template}`});
+    SpinnerService.stop({text: `Fetched ${template} template.`});
 
     const templateRepoPath = path.join(repoPath, template);
     const templateProjectPath = path.join(projectPath, template);
