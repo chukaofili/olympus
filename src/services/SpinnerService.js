@@ -3,7 +3,7 @@ const ora = require('ora');
 const spinner = ora();
 
 /**
- * SpinnerService represents a utility service fetch project templates from github.
+ * SpinnerService represents a utility service to show cli spinners.
  *
  * @class
  */

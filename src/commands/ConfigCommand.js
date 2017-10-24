@@ -1,5 +1,5 @@
 const Command = require('./Command');
-const {ConfigService, LogService} = require('../services');
+const {ConfigService, LogService, K8sService} = require('../services');
 
 /**
  * ConfigCommand represents the 'olympus config' command.
@@ -39,6 +39,7 @@ class ConfigCommand extends Command {
         LogService.success(`Successfully updated the ${this.package.name} configuration.`);
         break;
       case 'cloud':
+        await K8sService.inquireAndUpdateOptions();
         LogService.success(`Successfully updated the ${this.package.name} configuration.`);
         break;
       default:
