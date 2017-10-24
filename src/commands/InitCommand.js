@@ -36,7 +36,6 @@ class InitCommand extends Command {
     await TemplateService.setupInitFile(projectCache);
 
     await TemplateService.setupProjectTemplate(this.projectPath, this.template);
-
     return LogService.success(`Initialization complete.`);
   }
 

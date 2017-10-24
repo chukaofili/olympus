@@ -28,7 +28,7 @@ class TemplateService {
     const initFile = path.join(projectCache, 'olympusfile.yaml');
 
     if (FileService.exists(initFile)) {
-      return SpinnerService.startAndStop(`>> Already initialized olympusfile, skipping...`);
+      return SpinnerService.startAndStop({text: `Already initialized olympusfile, skipping...`, type: 'info'});
     }
 
     return this.renderFile(scaffoldFile, initFile);
@@ -42,8 +42,8 @@ class TemplateService {
   async setupProjectTemplate(projectPath, template = false) {
     const templateRepo = _.find(templateRepos, { name: template});
     if (!templateRepo || _.isBoolean(template)) {
+      SpinnerService.startAndStop({text: `Template [${template}] not found, skipping...`, type: 'info'});
       return [
-        `>> Template [${template}] not found, skipping...`,
         '',
         '  Sample templates:',
         '',
@@ -54,8 +54,9 @@ class TemplateService {
     }
 
     const repoPath = path.join(ConfigService.tmp, templateRepo.repoName);
-    LogService.info(`>> Fetching ${template} template, please wait...`);
+    SpinnerService.start({text: `Fetching ${template} template, please wait...`});
     await this.cloneRepo(templateRepo.repo, repoPath);
+    SpinnerService.stop({text: `Fetched ${template}`});
 
     const templateRepoPath = path.join(repoPath, template);
     const templateProjectPath = path.join(projectPath, template);

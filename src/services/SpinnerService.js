@@ -9,20 +9,29 @@ const spinner = ora();
  */
 class SpinnerService {
 
-  static start(color = 'yellow', text = '') {
+  static start({color = 'yellow', text = ''}) {
     spinner.color = color;
     return spinner.start(text);
   }
 
-  static stop(text = '') {
-    spinner.succeed(text);
+  static stop({text = '', type = 'succeed'}) {
+    switch (type) {
+      case 'succeed':
+      case 'fail':
+      case 'warn':
+      case 'info':
+        spinner[type](text);
+        break;
+      default:
+        spinner.succeed(text);
+        break;
+    }
     return spinner.clear();
   }
 
-  static startAndStop(color = 'yellow', text = '') {
-    console.log(color)
-    // this.start(color, text);
-    // return this.stop(text);
+  static startAndStop({text = '', color = 'yellow', type = 'succeed'}) {
+    this.start({color, text});
+    return this.stop({text, type});
   }
 
 }
