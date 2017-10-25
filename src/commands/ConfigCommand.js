@@ -35,7 +35,6 @@ class ConfigCommand extends Command {
         }
 
         await ConfigService.inquireAndUpdateOptions();
-
         LogService.success(`Successfully updated the ${this.package.name} configuration.`);
         break;
       case 'cloud':
