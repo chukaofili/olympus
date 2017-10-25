@@ -1,4 +1,5 @@
 const { LogService } = require('../services');
+const Package = require('../../package.json');
 
 /**
  * Command represents the base class for any commands.
@@ -18,6 +19,7 @@ class Command {
   constructor(event, options = {}) {
     this.event = event;
     this.options = options;
+    this.package = Package;
 
     this.execute = this.wrap(this.execute);
   }

@@ -28,4 +28,4 @@ const program = new commander.Command(command)
   })
   .parse(process.argv);
 
-collect(async () => new ConfigCommand(argument, program.opts()).execute());
+collect(async () => new ConfigCommand(command, argument, program.opts()).execute());
