@@ -38,8 +38,12 @@ class ConfigCommand extends Command {
         LogService.success(`Successfully updated the ${this.package.name} configuration.`);
         break;
       case 'cloud':
-        await K8sService.inquireAndUpdateOptions();
-        LogService.success(`Successfully updated the ${this.package.name} configuration.`);
+        try {
+          await K8sService.inquireAndUpdateOptions();
+          LogService.success(`Successfully added the cluster to the ${this.package.name} cloud configuration.`);
+        } catch (error) {
+          LogService.error(`Did not update the ${this.package.name} configuration.`);
+        }
         break;
       default:
         [

@@ -1,7 +1,10 @@
 const path = require('path');
 const ini = require('ini');
 const _ = require('lodash');
-const { ConfigService, InquireService, FileService } = require('./');
+const k8s = require('kubernetes-client');
+const {
+  ConfigService, FileService, InquireService, SpinnerService,
+} = require('./');
 
 /**
  * K8sService represents a utility service to confirm and confirgure kubernetes cloud service.
@@ -71,14 +74,14 @@ class K8sService {
         short: 'skip',
       }, {
         name: 'provide cluster-ca',
-        value: 'provide',
+        value: 'cluster-ca',
         short: 'cluster ca',
       }],
     }, {
       type: 'input',
       name: 'clusterCa',
       message: 'Provide path to your cluster-ca tls/ssl certificate:',
-      when: answers => (answers.tls === 'provide'),
+      when: answers => (answers.tls === 'cluster-ca'),
       validate: (filepath) => {
         if (filepath && FileService.exists(path.resolve(filepath))) {
           return true;
@@ -198,6 +201,73 @@ class K8sService {
     });
   }
 
+  authConfig({config}) {
+    let authConfig = {url: config.url, promises: true};
+    switch (config.tls) {
+      case 'cluster-ca':
+        authConfig = {
+          ...authConfig,
+          ca: FileService.read(config.clusterCa),
+        };
+        break;
+      case 'skip':
+        authConfig = {
+          ...authConfig,
+          insecureSkipTlsVerify: true,
+        };
+        break;
+      default:
+        break;
+    }
+
+    switch (config.authMethod) {
+      case 'user-pass':
+        authConfig = {
+          ...authConfig,
+          auth: {
+            user: config.username,
+            pass: config.password,
+          },
+        };
+        break;
+      case 'token':
+        authConfig = {
+          ...authConfig,
+          auth: {
+            bearer: config.token,
+          },
+        };
+        break;
+      case 'private-key':
+        authConfig = {
+          ...authConfig,
+          auth: {
+            cert: FileService.read(config.certFile),
+            key: FileService.read(config.privateKey),
+          },
+        };
+        break;
+      default:
+        break;
+    }
+
+    return authConfig;
+  }
+
+  async checkConnection({config, profile}) {
+    SpinnerService.start({text: `Checking connection to ${profile} cluster please wait...`});
+    const authConfig = this.authConfig({config});
+    const core = new k8s.Core(authConfig);
+
+    try {
+      await core.nodes.get();
+      SpinnerService.stop({text: `Connection to ${profile} cluster successful.`});
+    } catch (error) {
+      SpinnerService.stop({text: `Failed connecting to ${profile} cluster. Please check your configuration.`, type: 'fail'});
+      throw error;
+    }
+  }
+
   async inquireAndUpdateOptions() {
     const values = await InquireService.askQuestions({
       questions: this.defaultQuestions,
@@ -205,7 +275,13 @@ class K8sService {
     });
     const { profile } = values;
     const config = _.omit(values, ['profile']);
-    this.writeConfig({ profile, config });
+
+    try {
+      await this.checkConnection({config, profile});
+      this.writeConfig({ profile, config });
+    } catch (error) {
+      throw error;
+    }
   }
 
 }
