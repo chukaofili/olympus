@@ -10,7 +10,7 @@
     "olympus": "bin/olympus.js"
   },
   "engines": {
-    "node": ">=8.3.0",
+    "node": ">=8.0.0",
     "yarn": ">=1.0.2"
   },
   "dependencies": {
