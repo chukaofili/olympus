@@ -1,6 +1,6 @@
 {
   "name": "olympus",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "CLI for auto deploying kubernetes apps",
   "repository": "git@github.com:chukaofili/olympus.git",
   "author": "Chuka Ofili <ofili@microsmart.tk>",
