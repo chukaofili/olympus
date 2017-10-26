@@ -7,16 +7,19 @@ before_install:
   - export PATH=$HOME/.yarn/bin:$PATH
 cache: yarn
 
-# script: echo "Running tests against $(node -v) ..."
-
-# jobs:
-#   include:
-#     - stage: npm release
-#       node_js: "8"
-#       script: echo "Deploying to npm ..."
-#       deploy:
-#         provider: npm
-#         email: "ofili@microsmart.tk"
-#         api_key: $NPM_API_KEY
-#         on: deploy-npm-release
+jobs:
+  include:
+    - stage: check lint
+      node_js: "8"
+      script: echo "Performing yarn lint ..."
+      script: yarn lint
+    - stage: npm release
+      node_js: "8"
+      script: echo "Deploying to npm ..."
+      deploy:
+        provider: npm
+        email: "ofili@microsmart.tk"
+        api_key: $NPM_API_KEY
+        on:
+          tags: true
 
