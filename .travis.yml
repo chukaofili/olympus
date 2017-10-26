@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+  - "8"
+sudo: false
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.0.2
+  - export PATH=$HOME/.yarn/bin:$PATH
+cache: yarn
+
+# script: echo "Running tests against $(node -v) ..."
+
+# jobs:
+#   include:
+#     - stage: npm release
+#       node_js: "8"
+#       script: echo "Deploying to npm ..."
+#       deploy:
+#         provider: npm
+#         email: "ofili@microsmart.tk"
+#         api_key: $NPM_API_KEY
+#         on: deploy-npm-release
+
