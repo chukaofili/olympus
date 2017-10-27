@@ -19,6 +19,7 @@ class ConfigCommand extends Command {
     super(options);
     this.block = block;
     this.command = command;
+    this.update = options.update;
   }
 
   /**
@@ -26,9 +27,7 @@ class ConfigCommand extends Command {
    * @method
    */
   async execute() {
-    const {block} = this;
-
-    switch (block) {
+    switch (this.block) {
       case 'cli':
         if (!ConfigService.fileExists) {
           ConfigService.createFile();
@@ -39,8 +38,8 @@ class ConfigCommand extends Command {
         break;
       case 'cloud':
         try {
-          await K8sService.inquireAndUpdateOptions();
-          LogService.success(`Successfully added the cluster to the ${this.package.name} cloud configuration.`);
+          await K8sService.inquireAndUpdateOptions({update: this.update});
+          LogService.success(`Successfully updated ${this.package.name} cloud configuration.`);
         } catch (error) {
           LogService.error(`Did not update the ${this.package.name} configuration.`);
         }

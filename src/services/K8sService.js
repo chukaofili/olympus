@@ -3,7 +3,7 @@ const ini = require('ini');
 const _ = require('lodash');
 const k8s = require('kubernetes-client');
 const {
-  ConfigService, FileService, InquireService, SpinnerService,
+  ConfigService, FileService, InquireService, LogService, SpinnerService,
 } = require('./');
 
 /**
@@ -201,6 +201,24 @@ class K8sService {
     });
   }
 
+  async existingProfiles() {
+    const choices = _.keys(this.config);
+    if (!choices.length) {
+      LogService.error(`No config profiles have been created, exiting...`);
+      throw new Error('No config profiles have been created, exiting...');
+    }
+
+    const questions = {
+      type: 'list',
+      name: 'profile',
+      message: 'Select kubernetes cloud profile to update:',
+      choices,
+    };
+
+    const selectedProfile = await InquireService.askQuestions({questions});
+    return selectedProfile.profile;
+  }
+
   authConfig({config}) {
     let authConfig = {url: config.url, promises: true};
     switch (config.tls) {
@@ -268,13 +286,20 @@ class K8sService {
     }
   }
 
-  async inquireAndUpdateOptions() {
-    const values = await InquireService.askQuestions({
-      questions: this.defaultQuestions,
-      useDefaults: false,
-    });
-    const { profile } = values;
-    const config = _.omit(values, ['profile']);
+  async inquireAndUpdateOptions({update = false}) {
+    let questions = this.defaultQuestions;
+    let config;
+    let profile;
+
+    if (update) {
+      questions = _.filter(this.defaultQuestions, question => question.name !== 'profile');
+      profile = await this.existingProfiles();
+      config = await InquireService.askQuestions({questions});
+    } else {
+      const values = await InquireService.askQuestions({questions});
+      profile = values.profile; //eslint-disable-line
+      config = _.omit(values, ['profile']);
+    }
 
     try {
       await this.checkConnection({config, profile});
