@@ -53,7 +53,7 @@ class K8sService {
           return 'Please enter a valid profile name';
         }
 
-        if (this.readConfig({profile})){
+        if (this.readConfig({profile})) {
           return 'Profile name already exists (pass -u option to update instead)';
         }
 
