@@ -48,12 +48,16 @@ class K8sService {
       filter(val) {
         return val.trim();
       },
-      validate: (value) => {
-        if (value) {
-          return true;
+      validate: (profile) => {
+        if (!profile) {
+          return 'Please enter a valid profile name';
         }
 
-        return 'Please enter a valid profile name';
+        if (this.readConfig({profile})){
+          return 'Profile name already exists (pass -u option to update instead)';
+        }
+
+        return true;
       },
     }, {
       type: 'input',
