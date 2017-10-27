@@ -1,6 +1,6 @@
 {
   "name": "olympus",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "CLI for auto deploying kubernetes apps",
   "repository": "git@github.com:chukaofili/olympus.git",
   "author": "Chuka Ofili <ofili@microsmart.tk>",
@@ -10,7 +10,7 @@
     "olympus": "bin/olympus.js"
   },
   "engines": {
-    "node": ">=8.3.0",
+    "node": ">=8.0.0",
     "yarn": ">=1.0.2"
   },
   "dependencies": {

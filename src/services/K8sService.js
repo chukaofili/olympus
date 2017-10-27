@@ -3,7 +3,7 @@ const ini = require('ini');
 const _ = require('lodash');
 const k8s = require('kubernetes-client');
 const {
-  ConfigService, FileService, InquireService, SpinnerService,
+  ConfigService, FileService, InquireService, LogService, SpinnerService,
 } = require('./');
 
 /**
@@ -16,6 +16,14 @@ class K8sService {
 
   get configFilename() {
     return '.olympus_k8s';
+  }
+
+  get certsFolderName() {
+    return 'certs';
+  }
+
+  get certsFolder() {
+    return FileService.joinPath(ConfigService.cache, this.certsFolderName);
   }
 
   get configPath() {
@@ -33,24 +41,31 @@ class K8sService {
       message: 'Which cloud provider is your kubernetes cluster hosted?',
       default: 'gke',
       choices: ['aws', 'gke', 'other'],
-      filter(val) {
-        return val.toLowerCase();
-      },
     }, {
       type: 'input',
       name: 'profile',
       message: 'Give this cluster a profile name:',
-      validate: (value) => {
-        if (value) {
-          return true;
+      filter(val) {
+        return val.trim();
+      },
+      validate: (profile) => {
+        if (!profile) {
+          return 'Please enter a valid profile name';
         }
 
-        return 'Please enter a valid profile name';
+        if (this.readConfig({profile})) {
+          return 'Profile name already exists (pass -u option to update instead)';
+        }
+
+        return true;
       },
     }, {
       type: 'input',
       name: 'url',
       message: 'Enter your kubernetes url (eg: https://my-k8s-api-server.com):',
+      filter(val) {
+        return val.trim();
+      },
       validate: (value) => {
         if (value) {
           return true;
@@ -82,6 +97,9 @@ class K8sService {
       name: 'clusterCa',
       message: 'Provide path to your cluster-ca tls/ssl certificate:',
       when: answers => (answers.tls === 'cluster-ca'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (filepath) => {
         if (filepath && FileService.exists(path.resolve(filepath))) {
           return true;
@@ -116,6 +134,9 @@ class K8sService {
       name: 'username',
       message: 'Enter your kubernetes username:',
       when: this.authMethodFn('user-pass'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (value) => {
         if (value) {
           return true;
@@ -141,6 +162,9 @@ class K8sService {
       name: 'token',
       message: 'Enter your kubernetes bearer token:',
       when: this.authMethodFn('token'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (value) => {
         if (value) {
           return true;
@@ -153,6 +177,9 @@ class K8sService {
       name: 'privateKey',
       message: 'Provide path to your private-key-file:',
       when: this.authMethodFn('private-key'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (filepath) => {
         if (filepath && FileService.exists(path.resolve(filepath))) {
           return true;
@@ -165,6 +192,9 @@ class K8sService {
       name: 'certFile',
       message: 'Provide path to your cert-file:',
       when: this.authMethodFn('private-key'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (filepath) => {
         if (filepath && FileService.exists(path.resolve(filepath))) {
           return true;
@@ -199,6 +229,24 @@ class K8sService {
       filename: this.configPath,
       source: { ...this.config, [profile]: config },
     });
+  }
+
+  async existingProfiles() {
+    const choices = _.keys(this.config);
+    if (!choices.length) {
+      LogService.error(`No config profiles have been created, exiting...`);
+      throw new Error('No config profiles have been created, exiting...');
+    }
+
+    const questions = {
+      type: 'list',
+      name: 'profile',
+      message: 'Select kubernetes cloud profile to update:',
+      choices,
+    };
+
+    const selectedProfile = await InquireService.askQuestions({questions});
+    return selectedProfile.profile;
   }
 
   authConfig({config}) {
@@ -254,9 +302,33 @@ class K8sService {
     return authConfig;
   }
 
-  async checkConnection({config, profile}) {
+
+  moveCertFiles({testConfig = false, profile = false}) {
+    let config = {...testConfig};
+    if (_.has(testConfig, 'clusterCa')) {
+      const filenameCa = FileService.joinPath(this.certsFolder, `${profile}_cluster-ca${path.extname(testConfig.clusterCa)}`);
+      FileService.copy(testConfig.clusterCa, filenameCa);
+      config = {...config, clusterCa: filenameCa};
+    }
+
+    if (_.has(testConfig, 'privateKey')) {
+      const filenameKey = FileService.joinPath(this.certsFolder, `${profile}_tls-key${path.extname(testConfig.privateKey)}`);
+      FileService.copy(testConfig.privateKey, filenameKey);
+      config = {...config, privateKey: filenameKey};
+    }
+
+    if (_.has(testConfig, 'certFile')) {
+      const filenameCert = FileService.joinPath(this.certsFolder, `${profile}_tls-cert${path.extname(testConfig.certFile)}`);
+      FileService.copy(testConfig.certFile, filenameCert);
+      config = {...config, certFile: filenameCert};
+    }
+
+    return config;
+  }
+
+  async checkConnection({testConfig, profile}) {
     SpinnerService.start({text: `Checking connection to ${profile} cluster please wait...`});
-    const authConfig = this.authConfig({config});
+    const authConfig = this.authConfig({config: testConfig});
     const core = new k8s.Core(authConfig);
 
     try {
@@ -268,16 +340,24 @@ class K8sService {
     }
   }
 
-  async inquireAndUpdateOptions() {
-    const values = await InquireService.askQuestions({
-      questions: this.defaultQuestions,
-      useDefaults: false,
-    });
-    const { profile } = values;
-    const config = _.omit(values, ['profile']);
+  async inquireAndUpdateOptions({update = false}) {
+    let questions = this.defaultQuestions;
+    let testConfig;
+    let profile;
+
+    if (update) {
+      questions = _.filter(this.defaultQuestions, question => question.name !== 'profile');
+      profile = await this.existingProfiles();
+      testConfig = await InquireService.askQuestions({questions});
+    } else {
+      const values = await InquireService.askQuestions({questions});
+      profile = values.profile; //eslint-disable-line
+      testConfig = _.omit(values, ['profile']);
+    }
 
     try {
-      await this.checkConnection({config, profile});
+      await this.checkConnection({testConfig, profile});
+      const config = this.moveCertFiles({testConfig, profile});
       this.writeConfig({ profile, config });
     } catch (error) {
       throw error;

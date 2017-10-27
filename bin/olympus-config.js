@@ -12,6 +12,11 @@ const command = `${Config.COMMAND} config`;
 const program = new commander.Command(command)
   .arguments('<block>')
   .usage('<block> [options]')
+  .option(
+    '-u, --update',
+    'Update an existing kubernetes cloud profile.',
+    false,
+  )
   .action((input) => {
     argument = input;
   })
