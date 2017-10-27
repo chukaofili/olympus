@@ -18,6 +18,14 @@ class K8sService {
     return '.olympus_k8s';
   }
 
+  get certsFolderName() {
+    return 'certs';
+  }
+
+  get certsFolder() {
+    return FileService.joinPath(ConfigService.cache, this.certsFolderName);
+  }
+
   get configPath() {
     return FileService.joinPath(ConfigService.cache, this.configFilename);
   }
@@ -33,13 +41,13 @@ class K8sService {
       message: 'Which cloud provider is your kubernetes cluster hosted?',
       default: 'gke',
       choices: ['aws', 'gke', 'other'],
-      filter(val) {
-        return val.toLowerCase();
-      },
     }, {
       type: 'input',
       name: 'profile',
       message: 'Give this cluster a profile name:',
+      filter(val) {
+        return val.trim();
+      },
       validate: (value) => {
         if (value) {
           return true;
@@ -51,6 +59,9 @@ class K8sService {
       type: 'input',
       name: 'url',
       message: 'Enter your kubernetes url (eg: https://my-k8s-api-server.com):',
+      filter(val) {
+        return val.trim();
+      },
       validate: (value) => {
         if (value) {
           return true;
@@ -82,6 +93,9 @@ class K8sService {
       name: 'clusterCa',
       message: 'Provide path to your cluster-ca tls/ssl certificate:',
       when: answers => (answers.tls === 'cluster-ca'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (filepath) => {
         if (filepath && FileService.exists(path.resolve(filepath))) {
           return true;
@@ -116,6 +130,9 @@ class K8sService {
       name: 'username',
       message: 'Enter your kubernetes username:',
       when: this.authMethodFn('user-pass'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (value) => {
         if (value) {
           return true;
@@ -141,6 +158,9 @@ class K8sService {
       name: 'token',
       message: 'Enter your kubernetes bearer token:',
       when: this.authMethodFn('token'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (value) => {
         if (value) {
           return true;
@@ -153,6 +173,9 @@ class K8sService {
       name: 'privateKey',
       message: 'Provide path to your private-key-file:',
       when: this.authMethodFn('private-key'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (filepath) => {
         if (filepath && FileService.exists(path.resolve(filepath))) {
           return true;
@@ -165,6 +188,9 @@ class K8sService {
       name: 'certFile',
       message: 'Provide path to your cert-file:',
       when: this.authMethodFn('private-key'),
+      filter(val) {
+        return val.trim();
+      },
       validate: (filepath) => {
         if (filepath && FileService.exists(path.resolve(filepath))) {
           return true;
@@ -272,9 +298,33 @@ class K8sService {
     return authConfig;
   }
 
-  async checkConnection({config, profile}) {
+
+  moveCertFiles({testConfig = false, profile = false}) {
+    let config = {...testConfig};
+    if (_.has(testConfig, 'clusterCa')) {
+      const filenameCa = FileService.joinPath(this.certsFolder, `${profile}_cluster-ca${path.extname(testConfig.clusterCa)}`);
+      FileService.copy(testConfig.clusterCa, filenameCa);
+      config = {...config, clusterCa: filenameCa};
+    }
+
+    if (_.has(testConfig, 'privateKey')) {
+      const filenameKey = FileService.joinPath(this.certsFolder, `${profile}_tls-key${path.extname(testConfig.privateKey)}`);
+      FileService.copy(testConfig.privateKey, filenameKey);
+      config = {...config, privateKey: filenameKey};
+    }
+
+    if (_.has(testConfig, 'certFile')) {
+      const filenameCert = FileService.joinPath(this.certsFolder, `${profile}_tls-cert${path.extname(testConfig.certFile)}`);
+      FileService.copy(testConfig.certFile, filenameCert);
+      config = {...config, certFile: filenameCert};
+    }
+
+    return config;
+  }
+
+  async checkConnection({testConfig, profile}) {
     SpinnerService.start({text: `Checking connection to ${profile} cluster please wait...`});
-    const authConfig = this.authConfig({config});
+    const authConfig = this.authConfig({config: testConfig});
     const core = new k8s.Core(authConfig);
 
     try {
@@ -288,21 +338,22 @@ class K8sService {
 
   async inquireAndUpdateOptions({update = false}) {
     let questions = this.defaultQuestions;
-    let config;
+    let testConfig;
     let profile;
 
     if (update) {
       questions = _.filter(this.defaultQuestions, question => question.name !== 'profile');
       profile = await this.existingProfiles();
-      config = await InquireService.askQuestions({questions});
+      testConfig = await InquireService.askQuestions({questions});
     } else {
       const values = await InquireService.askQuestions({questions});
       profile = values.profile; //eslint-disable-line
-      config = _.omit(values, ['profile']);
+      testConfig = _.omit(values, ['profile']);
     }
 
     try {
-      await this.checkConnection({config, profile});
+      await this.checkConnection({testConfig, profile});
+      const config = this.moveCertFiles({testConfig, profile});
       this.writeConfig({ profile, config });
     } catch (error) {
       throw error;

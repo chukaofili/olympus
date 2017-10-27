@@ -134,7 +134,6 @@ class FileService {
    * @static
    */
   static joinPath(...paths) {
-    // TODO(jerome): normalize seems to create deploy/deploy.sh
     return paths.join('/');
   }
 
