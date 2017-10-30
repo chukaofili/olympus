@@ -1,6 +1,6 @@
 const ejs = require('ejs');
 const path = require('path');
-const Git = require('nodegit');
+const simpleGit = require('simple-git/promise');
 const _ = require('lodash');
 const {
   ConfigService, FileService, LogService, SpinnerService,
@@ -40,7 +40,7 @@ class TemplateService {
 
   async cloneRepo(sourceRepo, outputDirectory) {
     ConfigService.purgeTempDirectory();
-    await Git.Clone(sourceRepo, outputDirectory);
+    await simpleGit().silent(true).clone(sourceRepo, outputDirectory);
   }
 
   async setupProjectTemplate(projectPath, template = false) {
